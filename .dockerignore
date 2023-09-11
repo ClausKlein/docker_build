@@ -1,0 +1,11 @@
+*.diff
+*.gz
+*.patch
+*~
+.*.swp
+.git/
+_CPack_Packages/
+bin/
+build/
+include/
+lib/
