@@ -1,0 +1,56 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 25,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "Release",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Release",
+            "configurePreset": "Release",
+            "configuration": "Release"
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "Release",
+            "configurePreset": "Release",
+            "generators": [
+                "ZIP"
+            ],
+            "configurations": [
+                "Release"
+            ],
+            "packageName": "MYPKG",
+            "packageVersion": "1.2.3",
+            "packageDirectory": "${sourceDir}"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "Release",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "Release"
+                },
+                {
+                    "type": "build",
+                    "name": "Release"
+                },
+                {
+                    "type": "package",
+                    "name": "Release"
+                }
+            ]
+        }
+    ]
+}
