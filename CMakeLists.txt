@@ -17,7 +17,7 @@ project(
 
 include(cmake/CPM.cmake)
 
-find_package(fmt 10.1.1)
+find_package(fmt 10.1)
 if(NOT TARGET fmt::fmt)
   option(FMT_INSTALL "create an installable target" YES)
   if(FMT_INSTALL)
