@@ -10,10 +10,15 @@
             "name": "Release",
             "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/build",
+            "installDir": "${sourceDir}/stagedir",
             "cacheVariables": {
+                "CMAKE_PREFIX_PATH": {
+                    "type": "path",
+                    "value": "${sourceDir}/stagedir"
+                },
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_DEBUG_POSTFIX": "D",
-                "BUILD_SHARED_LIBS": false
+                "BUILD_SHARED_LIBS": true
             },
             "environment": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
@@ -28,6 +33,14 @@
             "name": "Release",
             "configurePreset": "Release",
             "configuration": "Release"
+        },
+        {
+            "name": "Install",
+            "configurePreset": "Release",
+            "configuration": "Release",
+            "targets": [
+                "install"
+            ]
         }
     ],
     "packagePresets": [
@@ -54,6 +67,10 @@
                 {
                     "type": "build",
                     "name": "Release"
+                },
+                {
+                    "type": "build",
+                    "name": "Install"
                 },
                 {
                     "type": "package",

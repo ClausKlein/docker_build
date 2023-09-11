@@ -34,13 +34,13 @@ COPY . /home/app
 WORKDIR /home/app
 RUN bash -c 'source ~/.cpprc \
     && cmake --workflow --preset Release --fresh \
-    && mkdir -p lib \
+    && mkdir -p stagedir/lib \
     && cp \
       /lib/x86_64-linux-gnu/libm.so* \
       /lib/x86_64-linux-gnu/libc.so* \
       /lib/x86_64-linux-gnu/libgcc_s.so* \
       /lib/x86_64-linux-gnu/libstdc++.so* \
-    /home/app/lib'
+    /home/app/stagedir/lib'
 
 ENTRYPOINT ["/bin/bash"]
 
@@ -49,20 +49,26 @@ ENTRYPOINT ["/bin/bash"]
 FROM ubuntu:22.04 as runner
 
 # copy the built binaries and their runtime dependencies
-COPY --from=builder /home/app/*.tar.gz /home/app/lib /home/app/
+COPY --from=builder /home/app/*.tar.gz /home/app/
 WORKDIR /home/app/
-RUN bash -c 'tar -xzvf *.gz --strip-components 1 && mv lib*.so* lib'
-ENV LD_LIBRARY_PATH /home/app/lib
+COPY --from=builder /home/app/stagedir stagedir
+RUN bash -c 'tar -xzvf *.gz --strip-components 1'
+ENV LD_LIBRARY_PATH /home/app/stagedir/lib
 
+# Running (example):
 ENTRYPOINT ["bin/Hello"]
-# with ENTRYPOINT ["/bin/bash"]
-# # root@106b5efb0b5e:/home/app# ldd bin/Hello
-# 	linux-vdso.so.1 (0x00007ffec9567000)
-# 	libstdc++.so.6 => /home/app/lib/libstdc++.so.6 (0x00007fb37f832000)
-# 	libgcc_s.so.1 => /home/app/lib/libgcc_s.so.1 (0x00007fb37f80e000)
-# 	libc.so.6 => /home/app/lib/libc.so.6 (0x00007fb37f5e6000)
-# 	libm.so.6 => /home/app/lib/libm.so.6 (0x00007fb37f4ff000)
-# 	/lib64/ld-linux-x86-64.so.2 (0x00007fb37fac4000)
+
+# TODO: for (docker run -ti):
+# XXX ENTRYPOINT ["/bin/bash"]
+
+# root@106b5efb0b5e:/home/app# ldd bin/Hello
+# 	linux-vdso.so.1 (0x00007ffc9d3a6000)
+# 	libfmt.so.10 => /home/app/stagedir/lib/libfmt.so.10 (0x00007f902a1f4000)
+# 	libc.so.6 => /home/app/stagedir/lib/libc.so.6 (0x00007f9029fcc000)
+# 	libstdc++.so.6 => /home/app/stagedir/lib/libstdc++.so.6 (0x00007f9029d5f000)
+# 	libgcc_s.so.1 => /home/app/stagedir/lib/libgcc_s.so.1 (0x00007f9029d3b000)
+# 	/lib64/ld-linux-x86-64.so.2 (0x00007f902a225000)
+# 	libm.so.6 => /home/app/stagedir/lib/libm.so.6 (0x00007f9029c54000)
 # root@106b5efb0b5e:/home/app# bin/Hello
 # Hello, world!
 # root@106b5efb0b5e:/home/app#
