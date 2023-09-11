@@ -9,7 +9,18 @@
         {
             "name": "Release",
             "generator": "Ninja Multi-Config",
-            "binaryDir": "${sourceDir}/build"
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_DEBUG_POSTFIX": "D",
+                "BUILD_SHARED_LIBS": false
+            },
+            "environment": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
+                "CPM_USE_LOCAL_PACKAGES": "NO",
+                "CPM_SOURCE_CACHE": "$env{HOME}/.cache/CPM",
+                "PATH": "$env{HOME}/.local/bin${pathListSep}$penv{PATH}"
+            }
         }
     ],
     "buildPresets": [
@@ -24,13 +35,11 @@
             "name": "Release",
             "configurePreset": "Release",
             "generators": [
-                "ZIP"
+                "TGZ"
             ],
             "configurations": [
                 "Release"
             ],
-            "packageName": "MYPKG",
-            "packageVersion": "1.2.3",
             "packageDirectory": "${sourceDir}"
         }
     ],
