@@ -5,7 +5,7 @@ in your terminal:
 
 ```bash
 docker build -f ./Dockerfile --tag=devcontainer:latest .
-docker run -it devcontainer:latest
+docker run -it --rm devcontainer:latest
 ```
 
 This command will put you in a `bash` session in a Ubuntu 22.04 Docker container,
