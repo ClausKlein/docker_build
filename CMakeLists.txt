@@ -17,24 +17,20 @@ project(
 
 include(cmake/CPM.cmake)
 
-find_package(fmt 10.1)
-if(NOT TARGET fmt::fmt)
-  option(FMT_INSTALL "create an installable target" YES)
-  if(FMT_INSTALL)
-    # A git package with both version and tag provided FIXME: EXCLUDE_FROM_ALL must be OFF or fmt
-    # target will NOT be installed! CK XXX CPMAddPackage("gh:fmtlib/fmt@10.1.1#10.1.1")
+option(FMT_INSTALL "create an installable target" YES)
+# A git package with both version and tag provided FIXME: EXCLUDE_FROM_ALL must be OFF or fmt target
+# will NOT be installed! CK XXX CPMAddPackage("gh:fmtlib/fmt@10.1.1#10.1.1")
 
-    # NOTE: The fmt library has to be installed if not found! BUT either clang-tidy checks nor
-    # compiler warnings are wanted!
-    CPMAddPackage(
-      NAME fmt
-      GIT_TAG 10.1.1
-      GITHUB_REPOSITORY fmtlib/fmt
-      EXCLUDE_FROM_ALL OFF
-      SYSTEM YES # used in case of cmake v3.25
-    )
-  endif()
-endif()
+# NOTE: The fmt library has to be installed if not found! BUT either clang-tidy checks nor compiler
+# warnings are wanted!
+CPMFindPackage(
+  NAME fmt
+  GIT_TAG 10.1.1
+  VERSION 10.1
+  GITHUB_REPOSITORY fmtlib/fmt
+  EXCLUDE_FROM_ALL OFF
+  SYSTEM YES # used in case of cmake v3.25
+)
 
 if(LINUX)
   # XXX set(CMAKE_EXE_LINKER_FLAGS -static)
@@ -48,16 +44,17 @@ if(CMAKE_SKIP_INSTALL_RULES)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME COMPONENT ${PROJECT_NAME})
-if(NOT FMT_INSTALL)
-  install(IMPORTED_RUNTIME_ARTIFACTS fmt::fmt RUNTIME_DEPENDENCY_SET runtime_dependency_set RUNTIME)
-  install(RUNTIME_DEPENDENCY_SET runtime_dependency_set RUNTIME DESTINATION lib)
-endif()
+install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET runtime_dependency_set
+        RUNTIME
+)
+install(RUNTIME_DEPENDENCY_SET runtime_dependency_set RUNTIME DESTINATION lib)
 
 if(LINUX)
-  # set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "/lib/x86_64-linux-gnu/libstdc++.so.6")
+  # XXX set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "/lib/x86_64-linux-gnu/libstdc++.so.6;...")
 endif()
+
 if(MSVC OR LINUX)
-  include(InstallRequiredSystemLibraries)
+  # XXX include(InstallRequiredSystemLibraries)
 endif()
 
 include(CPack)
