@@ -1,19 +1,24 @@
 #### Base Image
-FROM ubuntu:20.04 as setup-cpp-ubuntu
+FROM ubuntu:22.04 as setup-cpp-ubuntu
 
-RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends git wget gnupg ca-certificates && \
+RUN apt-get update -qq && \
+    # install nodejs
+    apt-get install -y --no-install-recommends git nodejs npm && \
     # install setup-cpp
-    wget --quiet "https://github.com/aminya/setup-cpp/releases/download/v0.35.6/setup-cpp-x64-linux" && \
-    chmod +x setup-cpp-x64-linux && \
-    # install the minmal compiler and tools set for build
-    ./setup-cpp-x64-linux \
+    npm install -g setup-cpp@v0.35.6 && \
+    # install the compiler and tools
+    setup-cpp \
+        --nala true \
         --compiler gcc \
         --cmake true \
         --ninja true \
-        --python true && \
+        --python true \
+        --gcovr true && \
     # cleanup
-    apt-get autoremove -y && \
+    nala autoremove -y && \
+    nala autopurge -y && \
+    apt-get clean && \
+    nala clean --lists && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/*
 
@@ -33,7 +38,7 @@ ENTRYPOINT ["/bin/bash"]
 
 #### Running environment
 # use a fresh image as the runner
-FROM ubuntu:20.04 as runner
+FROM ubuntu:22.04 as runner
 
 # copy the built binaries and their runtime dependencies
 COPY --from=builder /home/app/*.tar.gz /home/app/

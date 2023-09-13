@@ -18,11 +18,12 @@ project(
 include(cmake/CPM.cmake)
 
 option(FMT_INSTALL "create an installable target" YES)
-# A git package with both version and tag provided FIXME: EXCLUDE_FROM_ALL must be OFF or fmt target
-# will NOT be installed! CK XXX CPMAddPackage("gh:fmtlib/fmt@10.1.1#10.1.1")
+# A git package with both version 10.1 and a tag provided
+# XXX CPMAddPackage("gh:fmtlib/fmt@10.1#10.1.1")
+# FIXME: EXCLUDE_FROM_ALL must be OFF or fmt target will NOT be installed! CK
 
-# NOTE: The fmt library has to be installed if not found! BUT either clang-tidy checks nor compiler
-# warnings are wanted!
+# NOTE: The fmt library has to be installed if not found!
+# BUT either clang-tidy checks nor compiler warnings are wanted!
 CPMFindPackage(
   NAME fmt
   GIT_TAG 10.1.1
@@ -32,8 +33,8 @@ CPMFindPackage(
   SYSTEM YES # used in case of cmake v3.25
 )
 
-if(LINUX)
-  # XXX set(CMAKE_EXE_LINKER_FLAGS -static)
+if(NOT BUILD_SHARED_LIBS AND LINUX)
+  set(CMAKE_EXE_LINKER_FLAGS -static)
 endif()
 
 add_executable(${PROJECT_NAME} main.cpp)
@@ -44,13 +45,18 @@ if(CMAKE_SKIP_INSTALL_RULES)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME COMPONENT ${PROJECT_NAME})
-install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET
-        _dependency_set
-)
-# FIXME: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
-install(RUNTIME_DEPENDENCY_SET _dependency_set
-        POST_EXCLUDE_REGEXES "${CMAKE_INSTALL_PREFIX}/lib"
-        RUNTIME DESTINATION lib
-)
+
+if(BUILD_SHARED_LIBS)
+  install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET _dependency_set)
+
+  # FIXME: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
+  # cmake-format: off
+  install(
+    RUNTIME_DEPENDENCY_SET _dependency_set
+    POST_EXCLUDE_REGEXES "${CMAKE_INSTALL_PREFIX}/lib"
+    RUNTIME DESTINATION lib
+  )
+  # cmake-format: on
+endif()
 
 include(CPack)
