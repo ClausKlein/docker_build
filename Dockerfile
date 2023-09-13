@@ -27,14 +27,6 @@ WORKDIR /home/app
 RUN bash -c 'source ~/.cpprc \
     # build and install the C++ example
     && cmake --workflow --preset Release --fresh \
-    # install the C++ runtime libraries
-    && mkdir -p stagedir/lib \
-    && cp -f \
-      /lib/x86_64-linux-gnu/libm.so* \
-      /lib/x86_64-linux-gnu/libc.so* \
-      /lib/x86_64-linux-gnu/libgcc_s.so* \
-      /lib/x86_64-linux-gnu/libstdc++.so* \
-    /home/app/stagedir/lib \
     && tar --exclude=cmake --exclude=pkgconfig -czvf stagedir.tar.gz stagedir/lib stagedir/bin'
 
 ENTRYPOINT ["/bin/bash"]
@@ -46,7 +38,6 @@ FROM ubuntu:20.04 as runner
 # copy the built binaries and their runtime dependencies
 COPY --from=builder /home/app/*.tar.gz /home/app/
 WORKDIR /home/app/
-# XXX COPY --from=builder /home/app/stagedir stagedir
 RUN bash -c 'tar -xzvf stagedir.tar.gz --strip-components 1'
 ENV LD_LIBRARY_PATH /home/app/lib
 
