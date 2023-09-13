@@ -35,7 +35,7 @@ RUN bash -c 'source ~/.cpprc \
       /lib/x86_64-linux-gnu/libgcc_s.so* \
       /lib/x86_64-linux-gnu/libstdc++.so* \
     /home/app/stagedir/lib \
-    && tar --exclude=cmake -czvf stagedir.tar.gz stagedir/lib stagedir/bin'
+    && tar --exclude=cmake --exclude=pkgconfig -czvf stagedir.tar.gz stagedir/lib stagedir/bin'
 
 ENTRYPOINT ["/bin/bash"]
 
@@ -51,7 +51,7 @@ RUN bash -c 'tar -xzvf stagedir.tar.gz --strip-components 1'
 ENV LD_LIBRARY_PATH /home/app/lib
 
 # Running (example):
-ENTRYPOINT ["bin/Hello"]
+ENTRYPOINT ["bin/Hello", "--help"]
 
-# TODO: for (docker run -ti):
+# TODO: for (docker run -it):
 # XXX ENTRYPOINT ["/bin/bash"]

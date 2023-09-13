@@ -6,12 +6,20 @@ in your terminal:
 ```bash
 docker build -f ./Dockerfile --tag=devcontainer:latest .
 docker run -it --rm devcontainer:latest
+docker create --name Hello devcontainer:latest
+docker cp Hello:/home/app/stagedir.tar.gz Hello-ubuntu-v20.04.tgz
+docker rm -f Hello
 ```
 
-This command will put you in a `bash` session in a Ubuntu 22.04 Docker container,
+If may activate as `ENTRYPOINT ["/bin/bash"]` in Dockerfile and build it again.
+
+```bash
+docker run -it --rm devcontainer:latest
+```
+
+This command may put you in a `bash` session in a Ubuntu 20.04 Docker container,
 with all of the build tools already installed.
-Additionally, you will have `g++-13` and `clang++-16` installed as the default
-versions of `g++` and `clang++`.
+Additionally, you will have `g++-11` installed as the default versions of `g++` .
 
 You will be logged in as root, so you will see the `#` symbol as your prompt.
 You will be in a directory that contains a copy of the `project`;
