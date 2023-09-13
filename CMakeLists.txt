@@ -44,17 +44,13 @@ if(CMAKE_SKIP_INSTALL_RULES)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME COMPONENT ${PROJECT_NAME})
-install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET runtime_dependency_set
-        RUNTIME
+install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET
+        _dependency_set
 )
-install(RUNTIME_DEPENDENCY_SET runtime_dependency_set RUNTIME DESTINATION lib)
-
-if(LINUX)
-  # XXX set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "/lib/x86_64-linux-gnu/libstdc++.so.6;...")
-endif()
-
-if(MSVC OR LINUX)
-  # XXX include(InstallRequiredSystemLibraries)
-endif()
+# FIXME: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
+install(RUNTIME_DEPENDENCY_SET _dependency_set
+        POST_EXCLUDE_REGEXES "${CMAKE_INSTALL_PREFIX}/lib"
+        RUNTIME DESTINATION lib
+)
 
 include(CPack)
