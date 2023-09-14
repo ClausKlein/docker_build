@@ -32,8 +32,9 @@ RUN bash -c 'source ~/.cpprc \
 ENTRYPOINT ["/bin/bash"]
 
 #### Running environment
-# use a fresh image as the runner
-FROM linuxmintd/mint20.1-amd64:latest as runner
+# use a fresh minimal image as the runner
+# XXX FROM linuxmintd/mint20.1-amd64:latest as runner
+FROM ubuntu:20.04 as runner
 
 # copy the built binaries and their runtime dependencies
 COPY --from=builder /home/app/*.tar.gz /home/app/
