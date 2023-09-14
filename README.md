@@ -1,10 +1,10 @@
 ## Usage example of CMake install `(RUNTIME_DEPENDENCY_SET ...)`
 
-In our use case we build an C++ executable on `ubuntu 20.04` but with `gcc-13`.
+In our use case we build an C++ executable and link it with shared libraries on `ubuntu 20.04` but with `gcc-11`.
 
 It has to be delivered to [Linux Mint 20.1](https://linuxmint.com/download_all.php) with an older `libstd++` installed.
 
-So we need to install all the required system runtime libraries too with our executable.
+So we need to install all the required runtime libraries too with our executable.
 
 
 ### This project is based [setup-cpp inside a docker build](https://github.com/aminya/setup-cpp#inside-docker).

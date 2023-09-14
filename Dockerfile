@@ -6,7 +6,7 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     # install setup-cpp
     wget --quiet "https://github.com/aminya/setup-cpp/releases/download/v0.35.6/setup-cpp-x64-linux" && \
     chmod +x setup-cpp-x64-linux && \
-    # install the minmal compiler and tools set for build
+    # install the minimal compiler and tools set for build
     ./setup-cpp-x64-linux \
         --compiler gcc \
         --cmake true \
