@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21...3.27)
 
 # Only set the cxx_standard if it is not set by someone else
 if(NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 # strongly encouraged to enable this globally to avoid conflicts between -Wpedantic being enabled
@@ -16,6 +16,9 @@ project(
 )
 
 include(cmake/CPM.cmake)
+
+find_package(Boost 1.71 CONFIG REQUIRED COMPONENTS thread serialization)
+# TODO(CK) find_package(qba-prot-conv 3.3.1.6 REQUIRED)
 
 option(FMT_INSTALL "create an installable target" YES)
 # A git package with both version 10.1 and a tag provided
@@ -33,12 +36,13 @@ CPMFindPackage(
   SYSTEM YES # used in case of cmake v3.25
 )
 
-if(NOT BUILD_SHARED_LIBS AND LINUX)
-  set(CMAKE_EXE_LINKER_FLAGS -static)
-endif()
+# NOTE: only possible if all dependens libs are static!
+# if(NOT BUILD_SHARED_LIBS AND LINUX)
+#   set(CMAKE_EXE_LINKER_FLAGS -static)
+# endif()
 
 add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} fmt::fmt)
+target_link_libraries(${PROJECT_NAME} fmt::fmt Boost::thread)
 
 if(CMAKE_SKIP_INSTALL_RULES)
   return()
@@ -49,7 +53,7 @@ install(TARGETS ${PROJECT_NAME} RUNTIME COMPONENT ${PROJECT_NAME})
 if(BUILD_SHARED_LIBS)
   install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET _dependency_set)
 
-  # FIXME: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
+  # NOTE: POST_EXCLUDE_REGEXES to prevent use of: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
   # cmake-format: off
   install(
     RUNTIME_DEPENDENCY_SET _dependency_set
