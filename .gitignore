@@ -1,11 +1,9 @@
 *.diff
 *.gz
+*.tgz
 *.patch
 *~
 .*.swp
 _CPack_Packages/
-bin/
 build/
-include/
-lib/
 stagedir/

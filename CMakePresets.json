@@ -22,7 +22,7 @@
             },
             "environment": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-                "CPM_USE_LOCAL_PACKAGES": "NO",
+                "CPM_USE_LOCAL_PACKAGES": "YES",
                 "CPM_SOURCE_CACHE": "$env{HOME}/.cache/CPM",
                 "PATH": "$env{HOME}/.local/bin${pathListSep}$penv{PATH}"
             }
@@ -41,6 +41,20 @@
             "targets": [
                 "install"
             ]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "Release",
+            "configurePreset": "Release",
+            "configuration": "Release",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
         }
     ],
     "packagePresets": [
@@ -66,6 +80,10 @@
                 },
                 {
                     "type": "build",
+                    "name": "Release"
+                },
+                {
+                    "type": "test",
                     "name": "Release"
                 },
                 {
