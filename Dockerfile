@@ -9,7 +9,6 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     chmod +x setup-cpp-x64-linux && \
     # install the minimal compiler and tools set for build
     ./setup-cpp-x64-linux \
-
         --compiler gcc \
         --cmake true \
         --ninja true \
