@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21...3.27)
+cmake_minimum_required(VERSION 3.25...3.28)
 
 # Only set the cxx_standard if it is not set by someone else
 if(NOT DEFINED CMAKE_CXX_STANDARD)
@@ -7,6 +7,7 @@ endif()
 
 # strongly encouraged to enable this globally to avoid conflicts between -Wpedantic being enabled
 # and -std=c++20 and -std=gnu++20 for example when compiling with PCH enabled
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(
@@ -17,20 +18,19 @@ project(
 
 include(cmake/CPM.cmake)
 
-find_package(Boost 1.71 CONFIG REQUIRED COMPONENTS thread serialization)
-# TODO(CK) find_package(qba-prot-conv 3.3.1.6 REQUIRED)
+enable_testing()
 
 option(FMT_INSTALL "create an installable target" YES)
-# A git package with both version 10.1 and a tag provided
-# XXX CPMAddPackage("gh:fmtlib/fmt@10.1#10.1.1")
+# A git package with both version 10.2 and a tag provided
+# XXX CPMAddPackage("gh:fmtlib/fmt@10.1#10.2.1")
 # FIXME: EXCLUDE_FROM_ALL must be OFF or fmt target will NOT be installed! CK
 
 # NOTE: The fmt library has to be installed if not found!
 # BUT either clang-tidy checks nor compiler warnings are wanted!
-CPMFindPackage(
+CPMAddPackage(
   NAME fmt
-  GIT_TAG 10.1.1
-  VERSION 10.1
+  GIT_TAG 10.2.1
+  VERSION 10.2
   GITHUB_REPOSITORY fmtlib/fmt
   EXCLUDE_FROM_ALL OFF
   SYSTEM YES # used in case of cmake v3.25
@@ -42,7 +42,8 @@ CPMFindPackage(
 # endif()
 
 add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} fmt::fmt Boost::thread)
+target_link_libraries(${PROJECT_NAME} fmt::fmt)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 if(CMAKE_SKIP_INSTALL_RULES)
   return()
