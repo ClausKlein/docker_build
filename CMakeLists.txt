@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21...3.27)
+cmake_minimum_required(VERSION 3.25...3.30)
 
 # Only set the cxx_standard if it is not set by someone else
 if(NOT DEFINED CMAKE_CXX_STANDARD)
@@ -26,16 +26,20 @@ option(FMT_INSTALL "create an installable target" YES)
 # BUT either clang-tidy checks nor compiler warnings are wanted!
 CPMFindPackage(
   NAME fmt
-  GIT_TAG 10.1.1
-  VERSION 10.1
+  GIT_TAG 11.0.2
+  VERSION 11.0
   GITHUB_REPOSITORY fmtlib/fmt
   EXCLUDE_FROM_ALL OFF
-  SYSTEM YES # used in case of cmake v3.25
+  SYSTEM YES
 )
 
 if(NOT BUILD_SHARED_LIBS AND LINUX)
   set(CMAKE_EXE_LINKER_FLAGS -static)
 endif()
+
+find_package(XercesC 3.2.5 REQUIRED)
+add_executable(EnumVal EnumVal.cpp)
+target_link_libraries(EnumVal PRIVATE XercesC::XercesC)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} fmt::fmt)
@@ -44,19 +48,23 @@ if(CMAKE_SKIP_INSTALL_RULES)
   return()
 endif()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME COMPONENT ${PROJECT_NAME})
+set(_targets ${PROJECT_NAME} EnumVal)
+foreach(_EXE IN LISTS _targets)
+  message(STATUS "Install TARGET ${_EXE}")
+  install(TARGETS ${_EXE} RUNTIME)
 
-if(BUILD_SHARED_LIBS)
-  install(IMPORTED_RUNTIME_ARTIFACTS ${PROJECT_NAME} RUNTIME_DEPENDENCY_SET _dependency_set)
+  if(BUILD_SHARED_LIBS)
+    install(IMPORTED_RUNTIME_ARTIFACTS ${_EXE} RUNTIME_DEPENDENCY_SET ${_EXE}_dependency_set)
 
-  # FIXME: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
-  # cmake-format: off
-  install(
-    RUNTIME_DEPENDENCY_SET _dependency_set
-    POST_EXCLUDE_REGEXES "${CMAKE_INSTALL_PREFIX}/lib"
-    RUNTIME DESTINATION lib
-  )
-  # cmake-format: on
-endif()
+    # NOTE: POST_EXCLUDE_REGEXES to prevent use of: CONFLICTING_DEPENDENCIES_PREFIX  _conflicts
+    # cmake-format: off
+    install(
+      RUNTIME_DEPENDENCY_SET ${_EXE}_dependency_set
+      POST_EXCLUDE_REGEXES "${CMAKE_INSTALL_PREFIX}/lib"
+      RUNTIME DESTINATION lib
+    )
+    # cmake-format: on
+  endif()
+endforeach()
 
 include(CPack)
